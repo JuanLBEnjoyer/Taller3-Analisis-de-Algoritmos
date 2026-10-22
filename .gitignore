@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.class
+out/
+.idea/
+.vscode/
