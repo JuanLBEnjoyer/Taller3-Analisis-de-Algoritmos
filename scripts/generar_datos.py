@@ -47,7 +47,6 @@ def main():
         escribir(f"descendente_{n}.txt", descendente)
 
         escribir(f"claves_busqueda_{n}.txt", generar_claves(rng, aleatorio))
-        # Claves de posición: inicio, centro y final del arreglo ascendente
         escribir(f"claves_posicion_{n}.txt",
                  [ascendente[0], ascendente[n // 2], ascendente[-1]])
 
