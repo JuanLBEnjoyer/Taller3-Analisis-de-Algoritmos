@@ -15,17 +15,19 @@ from taller.util.verificador import verificar
 TAMANOS = [1_000, 10_000, 100_000, 1_000_000]
 VARIANTES = ["aleatorio", "ascendente", "descendente"]
 REPETICIONES = 5
-LIMITE_NS = 300 * 1_000_000_000
+LIMITE_NS = 60 * 1_000_000_000  
 RAW = RAIZ / "results" / "raw"
 INCIDENTES = RAW / "incidentes_ordenamiento_python.csv"
 MODULOS = [insertion_sort, dual_pivot_quicksort, merge_sort,
            heap_sort, radix_sort, bucket_sort]
 
 
-def prediccion(modulo, n_prev, prom_prev, n):
-    """Tiempo previsto para n, extrapolando desde el tamaño anterior medido."""
+def prediccion(modulo, n_prev, prom_prev, n, variante="aleatorio"):
     r = n / n_prev
-    if modulo is insertion_sort:
+    es_cuadratico = (modulo is insertion_sort) or (
+        modulo is dual_pivot_quicksort and variante in ("ascendente", "descendente")
+    )
+    if es_cuadratico:
         factor = r * r                                  
     else:
         factor = r * math.log(n) / math.log(n_prev)    
@@ -40,7 +42,6 @@ def incidente(modulo, variante, n, motivo):
 
 
 def medir(modulo, original):
-    """Devuelve (tiempos, None) si todo salió bien, o (None, motivo)."""
     tiempos = []
     try:
         for _ in range(REPETICIONES):
@@ -78,16 +79,28 @@ def main():
 
                 if clave in bloqueados:
                     incidente(m, variante, n, "omitido_por_n_menor")
+                    if clave in previo:
+                        t_est = prediccion(m, *previo[clave], n, variante)
+                        resultados.escribir_estimado(m.NOMBRE, variante, n, "NA", t_est)
+                        print(f"{m.NOMBRE:<20} {variante:<11} n={n:<8} {t_est / 1e6:12.3f} ms (estimado)")
                     continue
-                if clave in previo and prediccion(m, *previo[clave], n) > LIMITE_NS:
-                    bloqueados.add(clave)
-                    incidente(m, variante, n, "timeout_previsto")
-                    continue
+                if clave in previo:
+                    t_est = prediccion(m, *previo[clave], n, variante)
+                    if t_est > LIMITE_NS:
+                        bloqueados.add(clave)
+                        incidente(m, variante, n, "timeout_previsto")
+                        resultados.escribir_estimado(m.NOMBRE, variante, n, "NA", t_est)
+                        print(f"{m.NOMBRE:<20} {variante:<11} n={n:<8} {t_est / 1e6:12.3f} ms (estimado timeout)")
+                        continue
 
                 tiempos, motivo = medir(m, original)
                 if motivo:
                     bloqueados.add(clave)
                     incidente(m, variante, n, motivo)
+                    if clave in previo:
+                        t_est = prediccion(m, *previo[clave], n, variante)
+                        resultados.escribir_estimado(m.NOMBRE, variante, n, "NA", t_est)
+                        print(f"{m.NOMBRE:<20} {variante:<11} n={n:<8} {t_est / 1e6:12.3f} ms (estimado por error)")
                 else:
                     resultados.escribir_medido(m.NOMBRE, variante, n, "NA", tiempos)
                     prom = sum(tiempos) / len(tiempos)
