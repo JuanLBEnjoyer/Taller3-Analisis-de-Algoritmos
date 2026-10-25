@@ -1,0 +1,11 @@
+algoritmo,lenguaje,variante,n,motivo
+InsertionSort,Python,aleatorio,100000,timeout_previsto
+InsertionSort,Python,aleatorio,1000000,omitido_por_n_menor
+DualPivotQuickSort,Python,ascendente,10000,RecursionError
+DualPivotQuickSort,Python,ascendente,100000,omitido_por_n_menor
+DualPivotQuickSort,Python,ascendente,1000000,omitido_por_n_menor
+DualPivotQuickSort,Python,descendente,10000,RecursionError
+InsertionSort,Python,descendente,100000,timeout_previsto
+DualPivotQuickSort,Python,descendente,100000,omitido_por_n_menor
+InsertionSort,Python,descendente,1000000,omitido_por_n_menor
+DualPivotQuickSort,Python,descendente,1000000,omitido_por_n_menor

@@ -1,0 +1,6 @@
+algoritmo,lenguaje,variante,n,motivo
+DualPivotQuickSort,Java,ascendente,100000,StackOverflowError
+DualPivotQuickSort,Java,ascendente,1000000,omitido_por_n_menor
+DualPivotQuickSort,Java,descendente,100000,StackOverflowError
+InsertionSort,Java,descendente,1000000,timeout_previsto
+DualPivotQuickSort,Java,descendente,1000000,omitido_por_n_menor
